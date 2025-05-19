@@ -74,3 +74,126 @@ export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 ```
+### Activate the environment variables.
+```
+source ~/.bashrc
+```
+## 5. Configure Java Environment Variables
+## Find the Java path.
+```
+which javac
+```
+## Find the OpenJDK directory.
+```
+readlink -f /usr/bin/javac
+```
+### Edit the hadoop-env.sh file.
+```
+sudo nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+```
+### Add the following lines to the file. Then, close and save the file.
+```
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export HADOOP_CLASSPATH+=" $HADOOP_HOME/lib/*.jar"
+```
+### Browse to the hadoop lib directory.
+```
+cd /usr/local/hadoop/lib
+```
+### Download the Javax activation file.
+```
+sudo wget https://jcenter.bintray.com/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar
+```
+### Verify the Hadoop version.
+```
+hadoop version
+```
+### Edit the core-site.xml configuration file to specify the URL for your NameNode.
+```
+sudo nano $HADOOP_HOME/etc/hadoop/core-site.xml
+```
+### Add the following lines. Save and close the file.
+```
+<configuration>
+   <property>
+      <name>fs.default.name</name>
+      <value>hdfs://0.0.0.0:9000</value>
+      <description>The default file system URI</description>
+   </property>
+</configuration>
+```
+### Create a directory for storing node metadata and change the ownership to hadoop.
+```
+sudo mkdir -p /home/hadoop/hdfs/{namenode,datanode}
+sudo chown -R hadoop:hadoop /home/hadoop/hdfs
+```
+### Edit hdfs-site.xml configuration file to define the location for storing node metadata, fs-image file.
+```
+sudo nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+```
+### Add the following lines. Close and save the file.
+```
+<configuration>
+   <property>
+      <name>dfs.replication</name>
+      <value>1</value>
+   </property>
+
+   <property>
+      <name>dfs.name.dir</name>
+      <value>file:///home/hadoop/hdfs/namenode</value>
+   </property>
+
+   <property>
+      <name>dfs.data.dir</name>
+      <value>file:///home/hadoop/hdfs/datanode</value>
+   </property>
+</configuration>
+```
+### Edit mapred-site.xml configuration file to define MapReduce values.
+```
+sudo nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+```
+### Add the following lines. Save and close the file.
+```
+<configuration>
+   <property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+   </property>
+</configuration>
+```
+### Edit the yarn-site.xml configuration file and define YARN-related settings.
+```
+sudo nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+```
+### Add the following lines. Save and close the file.
+```
+<configuration>
+   <property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+   </property>
+</configuration>
+```
+### Log in with hadoop user.
+```
+sudo su - hadoop
+```
+### Validate the Hadoop configuration and format the HDFS NameNode.
+```
+hdfs namenode -format
+```
+## 6. Start the Apache Hadoop Cluster
+### Start the NameNode and DataNode.
+```
+start-dfs.sh
+```
+### Start the YARN resource and node managers.
+```
+start-yarn.sh
+```
+### Verify all the running components.
+```
+jps
+```
