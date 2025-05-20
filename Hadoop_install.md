@@ -163,6 +163,37 @@ sudo nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
    </property>
 </configuration>
 ```
+### Add Above code OR Use below
+```
+<configuration>
+   <property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+   </property>
+   <property>
+      <name>mapreduce.application.classpath</name>
+      <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/sha
+re/hadoop/mapreduce/lib/*</value>
+   </property>
+
+   <property>
+      <name>yarn.app.mapreduce.am.env</name>
+      <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+   </property>
+
+   <property>
+      <name>mapreduce.map.env</name>
+      <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+   </property>
+
+   <property>
+      <name>mapreduce.reduce.env</name>
+      <value>HADOOP_MAPRED_HOME=/usr/local/hadoop</value>
+   </property>
+   
+</configuration>
+
+```
 ### Edit the yarn-site.xml configuration file and define YARN-related settings.
 ```
 sudo nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
